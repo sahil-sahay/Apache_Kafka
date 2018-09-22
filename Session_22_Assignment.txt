@@ -1,0 +1,56 @@
+##Understanding Kafka, starting a broker/Leader that pushes messages to be consumed at consumer.
+##Demonstrating ways to create mulitnode replicas with multiple partitions. 
+##Different ways to create a topic(keyed/keyless) based on the key property.  
+##Formatting messages with custom values of key value separator & 
+##reading the same consumed messages at consumer using custom format using key separator property.
+
+##Command below starts the Zookeeper
+$KAFKA_HOME/bin/zookeeper-server-start.sh $KAFKA_HOME/config/zookeeper.properties
+
+## The below command is used to start broker
+$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server.properties
+
+##Create a topic named KeyLessTopic wherein partition is set to 1 & replication factor is set to 1. Since this 
+## example is being run over a single node cluster
+$KAFKA_HOME/bin/kafka-topics.sh --create --topic KeyLessTopic --zookeeper localhost:2181 --partitions 1 --replication-factor 1
+
+## Running a console producer. The command initiates a communication at port 9092 with the 
+## topic name KeyLessTopic
+$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic KeyLessTopic
+
+## These are the messages passed as a producer to topic named KeyLessTopic.
+{"name":"John", "exp":16}
+{"name":"Finn", "exp":20}
+{"name":"Cylin", "exp":18}
+{"name":"Mark", "exp":2}
+{"name":"Akshay", "exp":14}
+
+
+## Running a console consumer to read the type KeyLessTopic sent by the producer.
+## --from-beginning allows the topic messages to be read from beginning. The key property is set to false since no key value is involved.
+$KAFKA_HOME/bin/kafka-console-consumer.sh --topic KeyLessTopic --from-beginning --zookeeper localhost:2181 --property print.key=false
+
+
+##Create a topic named KeyedTopic. The name of the topic is specified by --topic which is key KeyedTopic
+##wherein partition is set to 1 & replication factor is set to 1. Since this 
+## example is being run over a single node cluster
+$KAFKA_HOME/bin/kafka-topics.sh --create --topic KeyedTopic --zookeeper localhost:2181 --partitions 1 --replication-factor 1
+
+
+## Running a console producer. The command initiates a communication at port 9092 with the topic name as KeyedTopic.
+## The key value separator is specified by "key.separator" property. which is set to "," as a key value separator.
+$KAFKA_HOME/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic KeyedTopic --property parse.key=true --property key.separator=","
+
+## These are the messages passed as a producer to topic named KeyedTopic.
+{"name":"John"},{"exp":16}
+{"name":"Finn"},{"exp":20}
+{"name":"Cylin"},{"exp":18}
+{"name":"Mark"},{"exp":2}
+{"name":"Akshay"},{"exp":14}
+
+
+## Running a console consumer to read the type KeyedTopic sent by the producer. The key property is set to true since key value is involved.
+##--from-beginning allows the topic messages to be read from beginning. The output separator is specified by key.separator = "-"
+## which seggregates the key value pair from a hyphen symbol"-"
+$KAFKA_HOME/bin/kafka-console-consumer.sh --topic KeyedTopic --from-beginning --zookeeper localhost:2181 --property print.key=true --property key.separator="-"
+
