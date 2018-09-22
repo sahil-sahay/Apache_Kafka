@@ -1,0 +1,2 @@
+# Apache_Kafka
+Understanding Kafka, starting a broker/Leader that pushes messages to be consumed at consumer. Demonstrating ways to create mulitnode replicas with multiple partitions.  Different ways to create a topic(keyed/keyless) based on the key property.   Formatting messages with custom values of key value separator &amp;  reading the same consumed messages at consumer using custom format using key separator property.
